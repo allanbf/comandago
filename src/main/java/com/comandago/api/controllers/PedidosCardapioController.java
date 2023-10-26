@@ -12,7 +12,6 @@ import com.comandago.api.services.PedidosCardapioService;
 
 @RestController
 @RequestMapping("/pedidos-cardapio")
-@CrossOrigin(origins = "*")
 public class PedidosCardapioController {
 
     final PedidosCardapioService pedidosCardapioService;

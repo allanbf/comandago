@@ -12,7 +12,6 @@ import com.comandago.api.repositories.MesaRepository;
 
 @RestController
 @RequestMapping("/mesas")
-@CrossOrigin(origins = "*")
 public class MesaController {
 
     final MesaRepository mesaRepository;
