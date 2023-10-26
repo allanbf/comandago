@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cardapios")
+@CrossOrigin(origins = "*")
 public class CardapioController {
 
     final CardapioService cardapioService;
