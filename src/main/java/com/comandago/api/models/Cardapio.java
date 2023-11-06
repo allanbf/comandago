@@ -31,7 +31,7 @@ public class Cardapio {
     private Long id;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nome;
 
     @Enumerated
@@ -44,4 +44,8 @@ public class Cardapio {
     private Double valor;
 
     private boolean estaAtivo = true;
+
+    public boolean getEstaAtivo(){
+        return this.estaAtivo;
+    }
 }

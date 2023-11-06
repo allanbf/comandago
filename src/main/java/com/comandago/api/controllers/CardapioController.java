@@ -2,6 +2,8 @@ package com.comandago.api.controllers;
 
 import com.comandago.api.models.Cardapio;
 import com.comandago.api.services.CardapioService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +15,12 @@ import java.util.List;
 @RequestMapping("/cardapios")
 public class CardapioController {
 
-    final CardapioService cardapioService;
-
-    CardapioController(CardapioService cardapioService) {
-        this.cardapioService = cardapioService;
-    }
+    @Autowired
+    private CardapioService cardapioService;
 
     @GetMapping
     public ResponseEntity<List<Cardapio>> listarCardapios() {
-        List<Cardapio> cardapios = cardapioService.listarCardapios();
-        return ResponseEntity.ok(cardapios);
+        return ResponseEntity.ok(cardapioService.listarCardapios());
     }
 
     @GetMapping("/{id}")
@@ -41,11 +39,13 @@ public class CardapioController {
             Cardapio novoCardapio = cardapioService.criarCardapio(cardapio);
             return ResponseEntity.status(HttpStatus.CREATED).body(novoCardapio);
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cardapio> atualizarCardapio(@PathVariable Long id, @Valid @RequestBody Cardapio cardapio) {
+    public ResponseEntity<Cardapio> atualizarCardapio(@PathVariable Long id, @RequestBody Cardapio cardapio) {
+        // if(cardapio == null)
+        //     return ResponseEntity.noContent().build();
         Cardapio cardapioAtualizado = cardapioService.atualizarCardapio(id, cardapio);
         if (cardapioAtualizado != null) {
             return ResponseEntity.ok(cardapioAtualizado);
@@ -58,7 +58,7 @@ public class CardapioController {
     public ResponseEntity<Void> excluirCardapio(@PathVariable Long id) {
         boolean sucesso = cardapioService.excluirCardapio(id);
         if (sucesso) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }
