@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.comandago.api.dtos.UsuarioDTO;
 import com.comandago.api.models.Usuario;
 import com.comandago.api.services.UsuarioService;
 
@@ -29,18 +30,19 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarUsuarios() {
-        List<Usuario> usuarios = usuarioService.listarUsuarios();
+    public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
+        List<UsuarioDTO> usuarios = usuarioService.listarUsuarios();
         return ResponseEntity.ok(usuarios);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> obterUsuarioPorId(@PathVariable Long id) {
-        Usuario usuario = usuarioService.obterUsuarioPorId(id);
+    public ResponseEntity<UsuarioDTO> obterUsuarioPorId(@PathVariable Long id) {
+        UsuarioDTO usuario = usuarioService.obterUsuarioPorId(id);
         if (usuario != null) {
             return ResponseEntity.ok(usuario);
         } else {
             return ResponseEntity.notFound().build();
+            //return ResponseEntity.noContent().build();
         }
     }
 
@@ -51,10 +53,11 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
+    public ResponseEntity<Void> atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, usuario);
         if (usuarioAtualizado != null) {
-            return ResponseEntity.ok(usuarioAtualizado);
+            //UsuarioDTO u = new UsuarioDTO(usuarioAtualizado);
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }

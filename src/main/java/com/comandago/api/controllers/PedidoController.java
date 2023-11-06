@@ -1,11 +1,15 @@
 package com.comandago.api.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
+import com.comandago.api.dtos.ItemPedidoDTO;
 import com.comandago.api.models.Pedido;
 import com.comandago.api.services.PedidoService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/pedidos")
 public class PedidoController {
 
-    final PedidoService pedidoService;
-
-    PedidoController(PedidoService pedidoService) {
-        this.pedidoService = pedidoService;
-    }
+    @Autowired PedidoService pedidoService;
 
     @GetMapping
     public ResponseEntity<List<Pedido>> listarPedidos() {
@@ -51,5 +51,15 @@ public class PedidoController {
     public ResponseEntity<Void> excluirPedido(@PathVariable Long id) {
         pedidoService.excluirPedido(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/itens/add/{id}")
+    public ResponseEntity<Void> adicionarItemPedido(@PathVariable Long id, @RequestBody ItemPedidoDTO item){
+        var pedido = pedidoService.obterPedidoPorId(id);
+        if(pedido != null){
+            pedidoService.adicionarItem(pedido, item);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

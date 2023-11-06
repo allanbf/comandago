@@ -1,5 +1,6 @@
 package com.comandago.api.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,6 +17,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
+
+    @Autowired
+    SecurityFilter securityFilter;
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -24,12 +28,15 @@ public class SecurityConfigurations {
         .csrf(csrf -> csrf.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(authorize -> authorize
-            //.requestMatchers(HttpMethod.POST, "/usuarios").hasRole("ADMIN")
             .antMatchers(HttpMethod.POST, "/auth/login").permitAll()
-            .antMatchers(HttpMethod.POST, "/auth/register").permitAll()
-            .antMatchers(HttpMethod.POST, "/usuarios").hasRole("ADMIN")
+            // .antMatchers(HttpMethod.POST, "/auth/register").hasRole("ADMIN")
+            // .antMatchers(HttpMethod.POST, "/usuarios").hasRole("ADMIN")
+            // .antMatchers(HttpMethod.GET, "/usuarios/**").hasRole("ADMIN")
+            //.antMatchers(HttpMethod.POST, "/usuarios").authenticated()
+            //.anyRequest().permitAll()
             .anyRequest().authenticated()
         )
+        .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
     }
 

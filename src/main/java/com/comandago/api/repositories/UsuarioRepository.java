@@ -10,4 +10,6 @@ import com.comandago.api.models.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
     
     UserDetails findByLogin(String login);
+
+    // Usuario usuarioFindByLogin(String login);
 }

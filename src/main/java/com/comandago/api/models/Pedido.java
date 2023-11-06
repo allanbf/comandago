@@ -1,7 +1,9 @@
 package com.comandago.api.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +17,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.comandago.api.enums.EstadoPedidoEnum;
+import com.comandago.api.repositories.PedidoRepository;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
@@ -55,4 +60,32 @@ public class Pedido {
     @JsonManagedReference
     @OneToMany(mappedBy = "pedido")
     private List<PedidosCardapio> itens;
+
+    private Double valor = 0.0;
+
+    public void setItens(List<PedidosCardapio> itens) {
+        this.valor = 0.0;
+        this.itens = itens;
+        for(PedidosCardapio item : itens){
+            this.valor += (item.getQuantidade() * item.getCardapio().getValor());
+        }
+    }
+
+    public void addItens(List<PedidosCardapio> itens){
+        if(this.itens == null)
+            this.itens = new ArrayList<>();
+        for(PedidosCardapio item : itens){
+            this.valor += (item.getQuantidade() * item.getCardapio().getValor());
+            this.itens.add(item);
+        }
+    }
+
+    public void addItem(PedidosCardapio item){{
+        if(this.itens == null)
+            this.itens = new ArrayList<>();
+        this.valor += (item.getQuantidade() * item.getCardapio().getValor());
+        itens.add(item);
+    }
+
+    }
 }

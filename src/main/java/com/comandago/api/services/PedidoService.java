@@ -1,20 +1,27 @@
 package com.comandago.api.services;
 
+import com.comandago.api.dtos.ItemPedidoDTO;
+import com.comandago.api.models.Cardapio;
 import com.comandago.api.models.Pedido;
+import com.comandago.api.models.PedidosCardapio;
+import com.comandago.api.repositories.CardapioRepository;
 import com.comandago.api.repositories.PedidoRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class PedidoService {
 
-    final PedidoRepository pedidoRepository;
+    @Autowired
+    private PedidoRepository pedidoRepository;
 
-    PedidoService(PedidoRepository pedidoRepository) {
-        this.pedidoRepository = pedidoRepository;
-    }
+    @Autowired
+    private CardapioRepository cardapioRepository;
 
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
@@ -48,5 +55,35 @@ public class PedidoService {
 
     public void excluirPedido(Long id) {
         pedidoRepository.deleteById(id);
+    }
+
+    public void adicionarItens(Pedido pedido, List<ItemPedidoDTO> itens){
+        List<PedidosCardapio> itensPedido = new ArrayList<>();
+        for(ItemPedidoDTO item : itens){
+            Optional<Cardapio> cardapio = cardapioRepository.findById(item.CardapioId());
+            if(cardapio.isPresent()){
+                var itemPedido = new PedidosCardapio();
+                itemPedido.setPedido(pedido);
+                itemPedido.setCardapio(cardapio.get());
+                itemPedido.setQuantidade(item.quantidade());
+                itemPedido.setObservacoes(item.observacoes());
+                itensPedido.add(itemPedido);
+            }
+        }
+        pedido.addItens(itensPedido);
+        pedidoRepository.save(pedido);
+    }
+
+    public void adicionarItem(Pedido pedido, ItemPedidoDTO item){
+        Optional<Cardapio> cardapioOptional = cardapioRepository.findById(item.CardapioId());
+        if(cardapioOptional.isPresent()){
+            var pedidoCardapio = new PedidosCardapio();
+            pedidoCardapio.setPedido(pedido);
+            pedidoCardapio.setCardapio(cardapioOptional.get());
+            pedidoCardapio.setQuantidade(item.quantidade());
+            pedidoCardapio.setObservacoes(item.observacoes());
+            pedido.addItem(pedidoCardapio);
+            pedidoRepository.save(pedido);
+        }
     }
 }
