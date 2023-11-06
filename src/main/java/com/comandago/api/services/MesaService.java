@@ -3,6 +3,7 @@ package com.comandago.api.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.comandago.api.models.Mesa;
@@ -11,36 +12,37 @@ import com.comandago.api.repositories.MesaRepository;
 @Service
 public class MesaService {
 
-    final MesaRepository mesaRepository;
-
-    MesaService(MesaRepository mesaRepository) {
-        this.mesaRepository = mesaRepository;
-    }
+    @Autowired
+    private MesaRepository mesaRepository;
 
     public List<Mesa> listarTodasMesas() {
         return mesaRepository.findAll();
     }
 
-    public Optional<Mesa> buscarMesaPorId(Long id) {
-        return mesaRepository.findById(id);
-    }
-
-    public Mesa criarMesa(Mesa mesa) {
-        if(mesa != null)
-            return mesaRepository.save(mesa);
+    public Mesa buscarMesaPorId(Long id) {
+        Optional<Mesa> mesaOptional = mesaRepository.findById(id);
+        if(mesaOptional.isPresent())
+            return mesaOptional.get();
         return null;
     }
 
-    public Optional<Mesa> atualizarMesa(Long id, Mesa mesaAtualizada) {
-        Optional<Mesa> mesaExistente = mesaRepository.findById(id);
-        if (mesaExistente.isPresent()) {
-            Mesa mesa = mesaExistente.get();
-            mesa.setEstado(mesaAtualizada.isEstado());
-            mesa.setEstaAtiva(mesaAtualizada.isEstaAtiva());
-            return Optional.of(mesaRepository.save(mesa));
-        } else {
-            return Optional.empty();
+    public Mesa criarMesa() {
+        return mesaRepository.save(new Mesa());
+    }
+
+    public boolean atualizarMesa(Long id, Mesa mesaAtualizada) {
+        Mesa mesa = buscarMesaPorId(id);
+        if(mesa != null){
+            if(mesaAtualizada.getEstaAtiva() != mesa.getEstaAtiva())
+                mesa.setEstaAtiva(mesaAtualizada.getEstaAtiva());
+
+            if(mesaAtualizada.getEstado() != mesa.getEstado())
+                mesa.setEstado(mesaAtualizada.getEstado());
+
+            mesaRepository.save(mesa);
+            return true;
         }
+        return false;
     }
 
     public boolean excluirMesa(Long id) {
