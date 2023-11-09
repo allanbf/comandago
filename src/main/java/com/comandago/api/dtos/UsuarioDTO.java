@@ -28,4 +28,12 @@ public class UsuarioDTO {
         this.atribuicao = usuario.getAtribuicao();
         this.estaAtivo = usuario.isEnabled();
     }
+
+    public void atribuirValoresUsuario(Usuario usuario){
+        usuario.setNome(this.nome);
+        usuario.setLogin(this.login);
+        //usuario.setSenha(this.senha);
+        usuario.setAtribuicao(this.atribuicao);
+        usuario.setEstaAtivo(this.estaAtivo);
+    }
 }

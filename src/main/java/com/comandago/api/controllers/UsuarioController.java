@@ -1,9 +1,11 @@
 package com.comandago.api.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,19 +17,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.comandago.api.dtos.RegisterDTO;
 import com.comandago.api.dtos.UsuarioDTO;
 import com.comandago.api.models.Usuario;
+import com.comandago.api.repositories.UsuarioRepository;
 import com.comandago.api.services.UsuarioService;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
     
-    final UsuarioService usuarioService;
+    @Autowired
+    private UsuarioService usuarioService;
 
-    UsuarioController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
@@ -53,14 +57,12 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
-        Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, usuario);
-        if (usuarioAtualizado != null) {
-            //UsuarioDTO u = new UsuarioDTO(usuarioAtualizado);
+    public ResponseEntity<Void> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody RegisterDTO usuarioAtualizado) {
+        boolean atualizado = usuarioService.atualizarUsuario(id, usuarioAtualizado);
+        if(atualizado){
             return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")

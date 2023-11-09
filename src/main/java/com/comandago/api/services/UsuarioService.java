@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.comandago.api.dtos.RegisterDTO;
 import com.comandago.api.dtos.UsuarioDTO;
 import com.comandago.api.models.Usuario;
 import com.comandago.api.repositories.UsuarioRepository;
@@ -42,39 +43,28 @@ public class UsuarioService {
     }
 
     public Usuario criarUsuario(Usuario usuario) {
-        if(usuario != null)
+        if(usuario != null){
+            String encryptedPassword = new BCryptPasswordEncoder().encode(usuario.getSenha());
+            usuario.setSenha(encryptedPassword);
             return usuarioRepository.save(usuario);
+        }
         return null;
     }
 
-    public Usuario atualizarUsuario(Long id, Usuario usuario) {
-        Optional<Usuario> usuarioExistenteOptional = usuarioRepository.findById(id);
-        if (usuarioExistenteOptional.isPresent()) {
-            Usuario usuarioExistente = usuarioExistenteOptional.get();
-            if(usuario.getNome() != null)
-                usuarioExistente.setNome(usuario.getNome());
 
-            if(usuario.getLogin() != null){
-                usuarioExistente.setLogin(usuario.getLogin());
-                // Usuario user = usuarioRepository.usuarioFindByLogin(usuario.getLogin());
-                // if(user.getId() == id){
-                // }
-            }
-
-            if(usuario.getSenha() != null){
-                String encryptedPassword = new BCryptPasswordEncoder().encode(usuario.getSenha());
-                usuarioExistente.setSenha(encryptedPassword);
-            }
-
-            if(usuario.getAtribuicao() != null)
-                usuarioExistente.setAtribuicao(usuario.getAtribuicao());
-
-            usuarioExistente.setEstaAtivo(usuario.isEnabled());
-
-            return usuarioRepository.save(usuarioExistente);
-        } else {
-            return null;
+    public boolean atualizarUsuario(Long id, RegisterDTO usuarioAtualizado){
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        if(usuarioOptional.isPresent()){
+            Usuario usuario = usuarioOptional.get();
+            usuario.setNome(usuarioAtualizado.nome());
+            usuario.setLogin(usuarioAtualizado.login());
+            String encryptedPassword = new BCryptPasswordEncoder().encode(usuarioAtualizado.senha());
+            usuario.setSenha(encryptedPassword);
+            usuario.setAtribuicao(usuarioAtualizado.atribuicao());
+            usuarioRepository.save(usuario);
+            return true;
         }
+        return false;
     }
 
     public boolean excluirUsuario(Long id) {
@@ -82,8 +72,7 @@ public class UsuarioService {
         if (usuarioOptional.isPresent()) {
             usuarioRepository.deleteById(id);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }
