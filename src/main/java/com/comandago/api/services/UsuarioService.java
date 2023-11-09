@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.comandago.api.dtos.AtualizarUsuarioDTO;
 import com.comandago.api.dtos.RegisterDTO;
 import com.comandago.api.dtos.UsuarioDTO;
 import com.comandago.api.models.Usuario;
@@ -52,16 +53,51 @@ public class UsuarioService {
     }
 
 
-    public boolean atualizarUsuario(Long id, RegisterDTO usuarioAtualizado){
+    public boolean atualizarUsuario(Long id, AtualizarUsuarioDTO usuarioAtualizado){
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        System.out.println(usuarioAtualizado.toString());
         if(usuarioOptional.isPresent()){
+            boolean atualizado = false;
             Usuario usuario = usuarioOptional.get();
-            usuario.setNome(usuarioAtualizado.nome());
-            usuario.setLogin(usuarioAtualizado.login());
-            String encryptedPassword = new BCryptPasswordEncoder().encode(usuarioAtualizado.senha());
-            usuario.setSenha(encryptedPassword);
-            usuario.setAtribuicao(usuarioAtualizado.atribuicao());
-            usuarioRepository.save(usuario);
+
+            if(!usuario.getNome().equals(usuarioAtualizado.getNome())){
+                System.out.println("if nome");
+                atualizado = true;
+                usuario.setNome(usuarioAtualizado.getNome());
+            }
+
+            if(!usuario.getLogin().equals(usuarioAtualizado.getLogin())){
+                System.out.println("if login");
+                atualizado = true;
+                usuario.setLogin(usuarioAtualizado.getLogin());
+            }
+
+            if(usuarioAtualizado.getSenha() != null){
+                String encryptedPassword = new BCryptPasswordEncoder().encode(usuarioAtualizado.getSenha());
+                if(!usuario.getSenha().equals(encryptedPassword)){
+                    System.out.println("if senha");
+                    System.out.println("Usuario: ".concat(usuario.getNome()).concat(", senha: ").concat(usuario.getSenha()));
+                    System.out.println("Usuario: ".concat(usuarioAtualizado.getNome()).concat(", senha: ").concat(encryptedPassword));
+                    atualizado = true;
+                    usuario.setSenha(encryptedPassword);
+                }
+            }
+
+            if(!usuario.getAtribuicao().equals(usuarioAtualizado.getAtribuicao())){
+                System.out.println("if atribuição");
+                atualizado = true;
+                usuario.setAtribuicao(usuarioAtualizado.getAtribuicao());
+            }
+
+            if(usuario.isEstaAtivo() != usuarioAtualizado.isEstaAtivo()){
+                System.out.println("if está ativo");
+                atualizado = true;
+                usuario.setEstaAtivo(usuarioAtualizado.isEstaAtivo());
+            }
+
+            if(atualizado)
+                usuarioRepository.save(usuario);
+
             return true;
         }
         return false;

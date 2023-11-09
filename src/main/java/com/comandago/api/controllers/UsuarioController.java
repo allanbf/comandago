@@ -1,7 +1,6 @@
 package com.comandago.api.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -17,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.comandago.api.dtos.AtualizarUsuarioDTO;
 import com.comandago.api.dtos.RegisterDTO;
 import com.comandago.api.dtos.UsuarioDTO;
 import com.comandago.api.models.Usuario;
-import com.comandago.api.repositories.UsuarioRepository;
 import com.comandago.api.services.UsuarioService;
 
 @RestController
@@ -29,9 +28,6 @@ public class UsuarioController {
     
     @Autowired
     private UsuarioService usuarioService;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
@@ -44,20 +40,20 @@ public class UsuarioController {
         UsuarioDTO usuario = usuarioService.obterUsuarioPorId(id);
         if (usuario != null) {
             return ResponseEntity.ok(usuario);
-        } else {
-            return ResponseEntity.notFound().build();
-            //return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.notFound().build();
+        //return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> criarUsuario(@Valid @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> criarUsuario(@Valid @RequestBody Usuario usuario) {
         Usuario novoUsuario = usuarioService.criarUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+        UsuarioDTO usuarioDTO = new UsuarioDTO(novoUsuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody RegisterDTO usuarioAtualizado) {
+    public ResponseEntity<Void> atualizarUsuario(@PathVariable Long id, @RequestBody AtualizarUsuarioDTO usuarioAtualizado) {
         boolean atualizado = usuarioService.atualizarUsuario(id, usuarioAtualizado);
         if(atualizado){
             return ResponseEntity.ok().build();
@@ -70,8 +66,7 @@ public class UsuarioController {
         boolean sucesso = usuarioService.excluirUsuario(id);
         if (sucesso) {
             return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.notFound().build();
     }
 }
