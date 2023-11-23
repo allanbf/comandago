@@ -8,7 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.comandago.api.dtos.AtualizarUsuarioDTO;
-import com.comandago.api.dtos.RegisterDTO;
 import com.comandago.api.dtos.UsuarioDTO;
 import com.comandago.api.models.Usuario;
 import com.comandago.api.repositories.UsuarioRepository;

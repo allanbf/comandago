@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.comandago.api.dtos.AtualizarUsuarioDTO;
-import com.comandago.api.dtos.RegisterDTO;
 import com.comandago.api.dtos.UsuarioDTO;
 import com.comandago.api.models.Usuario;
 import com.comandago.api.services.UsuarioService;
