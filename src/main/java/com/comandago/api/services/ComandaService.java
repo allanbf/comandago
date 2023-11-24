@@ -1,7 +1,12 @@
 package com.comandago.api.services;
 
+import com.comandago.api.dtos.ComandaDTO;
 import com.comandago.api.models.Comanda;
+import com.comandago.api.models.Mesa;
 import com.comandago.api.repositories.ComandaRepository;
+import com.comandago.api.repositories.MesaRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,11 +15,11 @@ import java.util.Optional;
 @Service
 public class ComandaService {
 
-    final ComandaRepository comandaRepository;
+    @Autowired
+    private ComandaRepository comandaRepository;
 
-    ComandaService(ComandaRepository comandaRepository) {
-        this.comandaRepository = comandaRepository;
-    }
+    @Autowired 
+    private MesaRepository mesaRepository;
 
 
     public List<Comanda> listarComandas() {
@@ -26,10 +31,18 @@ public class ComandaService {
         return comanda.orElse(null);
     }
 
-    public Comanda criarComanda(Comanda comanda) {
-        if(comanda != null)
-            return comandaRepository.save(comanda);
-        return null;
+    public boolean criarComanda(ComandaDTO comandaDTO) {
+        Optional<Mesa> mesaOptional = mesaRepository.findById(comandaDTO.getIdMesa());
+        Mesa mesa = mesaOptional.get();
+        System.out.println(mesa.toString());
+        if(mesaOptional.isPresent()){
+            var comanda = new Comanda();
+            comanda.setNomeCliente(comandaDTO.getNomeCliente());
+            comanda.setMesa(mesa);
+            comandaRepository.save(comanda);
+            return true;
+        }
+        return false;
     }
 
     public Comanda atualizarComanda(Long id, Comanda comandaAtualizada) {

@@ -41,12 +41,10 @@ public class Comanda {
     @Column(nullable = false)
     private String nomeCliente;
 
-    @NotNull
     @Column(name = "total_a_pagar")
     @DecimalMin(value = "0.0", inclusive = true)
     private Double totalAPagar = 0.0;
 
-    @NotNull
     @ManyToMany
     private List<Pedido> pedidos;
 }

@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cardapios")
+@RequestMapping("/cardapio")
 public class CardapioController {
 
     @Autowired
