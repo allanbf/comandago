@@ -49,6 +49,15 @@ public class PedidoController {
         return ResponseEntity.notFound().build();
     }
 
+    @PutMapping("/pedido/{id}")
+    public ResponseEntity<Void> adicionarItensPedido(@PathVariable Long id, @RequestBody List<ItemPedidoDTO> itens){
+        boolean resposta = pedidoService.adicionarItens(id, itens);
+        if(resposta)
+            return ResponseEntity.ok().build();
+            
+        return ResponseEntity.notFound().build();
+    }
+
     @PostMapping("/comanda/{id}")
     public ResponseEntity<RespostaPedidoDTO> criarPedido(@PathVariable Long id, @RequestBody PedidoDTO pedido) {
         if(pedido != null){

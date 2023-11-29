@@ -13,6 +13,7 @@ import com.comandago.api.repositories.CardapioRepository;
 import com.comandago.api.repositories.ComandaRepository;
 import com.comandago.api.repositories.MesaRepository;
 import com.comandago.api.repositories.PedidoRepository;
+import com.comandago.api.repositories.PedidosCardapioRepository;
 import com.comandago.api.repositories.UsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,12 @@ public class PedidoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired ComandaRepository comandaRepository;
+    @Autowired
+    private ComandaRepository comandaRepository;
+
+    @Autowired
+    private PedidosCardapioRepository pedidosCardapioRepository;
+
 
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
@@ -50,8 +56,8 @@ public class PedidoService {
 
     public Long criarPedido(Long idComanda, PedidoDTO pedidoDTO) {
         Optional<Comanda> comandaOptional = comandaRepository.findById(idComanda);
-        Optional<Usuario> usuarioOpitional = usuarioRepository.findById(pedidoDTO.idUsuario());
-        Optional<Mesa> mesaOptional = mesaRepository.findById(pedidoDTO.idMesa());
+        Optional<Usuario> usuarioOpitional = usuarioRepository.findById(pedidoDTO.getIdUsuario());
+        Optional<Mesa> mesaOptional = mesaRepository.findById(pedidoDTO.getIdMesa());
         if(comandaOptional.isPresent() && usuarioOpitional.isPresent() && mesaOptional.isPresent()){
             Comanda comanda = comandaOptional.get();
             var pedido = new Pedido();
@@ -85,25 +91,33 @@ public class PedidoService {
         pedidoRepository.deleteById(id);
     }
 
-    public void adicionarItens(Pedido pedido, List<ItemPedidoDTO> itens){
+    public boolean adicionarItens(Long idPedido, List<ItemPedidoDTO> itens){
+        Optional<Pedido> pedidoOptional = pedidoRepository.findById(idPedido);
+        Pedido pedido = pedidoOptional.get();
         List<PedidosCardapio> itensPedido = new ArrayList<>();
-        for(ItemPedidoDTO item : itens){
-            Optional<Cardapio> cardapio = cardapioRepository.findById(item.CardapioId());
-            if(cardapio.isPresent()){
-                var itemPedido = new PedidosCardapio();
-                itemPedido.setPedido(pedido);
-                itemPedido.setCardapio(cardapio.get());
-                itemPedido.setQuantidade(item.quantidade());
-                itemPedido.setObservacoes(item.observacoes());
-                itensPedido.add(itemPedido);
+        if(pedido != null){
+            for(ItemPedidoDTO item : itens){
+                Optional<Cardapio> cardapio = cardapioRepository.findById(item.cardapioId());
+                if(cardapio.isPresent()){
+                    var itemPedido = new PedidosCardapio();
+                    itemPedido.setPedido(pedido);
+                    itemPedido.setCardapio(cardapio.get());
+                    itemPedido.setQuantidade(item.quantidade());
+                    itemPedido.setObservacoes(item.observacoes());
+                    pedidosCardapioRepository.save(itemPedido);
+                    itensPedido.add(itemPedido);
+                }
             }
+            pedido.addItens(itensPedido);
+            pedidoRepository.save(pedido);
+            return true;
         }
-        pedido.addItens(itensPedido);
-        pedidoRepository.save(pedido);
+
+        return false;
     }
 
     public void adicionarItem(Pedido pedido, ItemPedidoDTO item){
-        Optional<Cardapio> cardapioOptional = cardapioRepository.findById(item.CardapioId());
+        Optional<Cardapio> cardapioOptional = cardapioRepository.findById(item.cardapioId());
         if(cardapioOptional.isPresent()){
             var pedidoCardapio = new PedidosCardapio();
             pedidoCardapio.setPedido(pedido);

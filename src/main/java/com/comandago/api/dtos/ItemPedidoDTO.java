@@ -1,5 +1,5 @@
 package com.comandago.api.dtos;
 
-public record ItemPedidoDTO(Long CardapioId, Integer quantidade, String observacoes) {
+public record ItemPedidoDTO(Long cardapioId, Integer quantidade, String observacoes) {
     
 }
