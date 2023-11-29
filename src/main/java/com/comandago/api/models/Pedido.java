@@ -1,6 +1,7 @@
 package com.comandago.api.models;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class Pedido {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime dataHora = LocalDateTime.now();
+    private LocalDateTime dataHora = LocalDateTime.now(ZoneOffset.of("-03:00"));
 
     @NotNull
     @ManyToOne

@@ -1,6 +1,7 @@
 package com.comandago.api.services;
 
 import com.comandago.api.dtos.ComandaDTO;
+import com.comandago.api.enums.EstadoMesaEnum;
 import com.comandago.api.models.Comanda;
 import com.comandago.api.models.Mesa;
 import com.comandago.api.repositories.ComandaRepository;
@@ -35,9 +36,10 @@ public class ComandaService {
         Optional<Mesa> mesaOptional = mesaRepository.findById(comandaDTO.getIdMesa());
         Mesa mesa = mesaOptional.get();
         System.out.println(mesa.toString());
-        if(mesaOptional.isPresent()){
+        if(mesaOptional.isPresent() && mesa.getEstado().equals(EstadoMesaEnum.LIVRE)){
             var comanda = new Comanda();
             comanda.setNomeCliente(comandaDTO.getNomeCliente());
+            mesa.setEstado(EstadoMesaEnum.OCUPADA);
             comanda.setMesa(mesa);
             comandaRepository.save(comanda);
             return true;

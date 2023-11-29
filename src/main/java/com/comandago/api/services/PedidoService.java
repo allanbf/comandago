@@ -1,11 +1,19 @@
 package com.comandago.api.services;
 
+import com.comandago.api.dtos.ConsultarPedidosComandaDTO;
 import com.comandago.api.dtos.ItemPedidoDTO;
+import com.comandago.api.dtos.PedidoDTO;
 import com.comandago.api.models.Cardapio;
+import com.comandago.api.models.Comanda;
+import com.comandago.api.models.Mesa;
 import com.comandago.api.models.Pedido;
 import com.comandago.api.models.PedidosCardapio;
+import com.comandago.api.models.Usuario;
 import com.comandago.api.repositories.CardapioRepository;
+import com.comandago.api.repositories.ComandaRepository;
+import com.comandago.api.repositories.MesaRepository;
 import com.comandago.api.repositories.PedidoRepository;
+import com.comandago.api.repositories.UsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +31,14 @@ public class PedidoService {
     @Autowired
     private CardapioRepository cardapioRepository;
 
+    @Autowired
+    private MesaRepository mesaRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired ComandaRepository comandaRepository;
+
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
     }
@@ -32,9 +48,21 @@ public class PedidoService {
         return optionalPedido.orElse(null);
     }
 
-    public Pedido criarPedido(Pedido pedido) {
-        if(pedido != null)
-            return pedidoRepository.save(pedido);
+    public Long criarPedido(Long idComanda, PedidoDTO pedidoDTO) {
+        Optional<Comanda> comandaOptional = comandaRepository.findById(idComanda);
+        Optional<Usuario> usuarioOpitional = usuarioRepository.findById(pedidoDTO.idUsuario());
+        Optional<Mesa> mesaOptional = mesaRepository.findById(pedidoDTO.idMesa());
+        if(comandaOptional.isPresent() && usuarioOpitional.isPresent() && mesaOptional.isPresent()){
+            Comanda comanda = comandaOptional.get();
+            var pedido = new Pedido();
+            pedido.setUsuario(usuarioOpitional.get());
+            pedido.setMesa(mesaOptional.get());
+            comanda.addPedido(pedido);
+            pedidoRepository.save(pedido);
+            comandaRepository.save(comanda);
+            return pedido.getId();
+        }
+        
         return null;
     }
 
@@ -85,5 +113,21 @@ public class PedidoService {
             pedido.addItem(pedidoCardapio);
             pedidoRepository.save(pedido);
         }
+    }
+
+    public List<ConsultarPedidosComandaDTO> listarPedidosComanda(Long idComanda) {
+        Optional<Comanda> comandaOptional = comandaRepository.findById(idComanda);
+        if(comandaOptional.isPresent()){
+            List<ConsultarPedidosComandaDTO> retorno = new ArrayList<>();
+
+            for(Pedido pedido : comandaOptional.get().getPedidos()){
+                var dto = new ConsultarPedidosComandaDTO(pedido);
+                retorno.add(dto);
+            }
+
+            return retorno;
+        }
+
+        return null;
     }
 }

@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.comandago.api.dtos.ConsultarPedidosComandaDTO;
 import com.comandago.api.dtos.ItemPedidoDTO;
+import com.comandago.api.dtos.PedidoDTO;
+import com.comandago.api.dtos.RespostaPedidoDTO;
 import com.comandago.api.models.Pedido;
 import com.comandago.api.services.PedidoService;
 
@@ -38,11 +41,19 @@ public class PedidoController {
         return ResponseEntity.ok(pedido);
     }
 
-    @PostMapping
-    public ResponseEntity<Pedido> criarPedido(@Valid @RequestBody Pedido pedido) {
+    @GetMapping("/comanda/{id}")
+    public ResponseEntity<List<ConsultarPedidosComandaDTO>> listarPedidosComanda(@PathVariable Long id){
+        List<ConsultarPedidosComandaDTO> resposta = pedidoService.listarPedidosComanda(id);
+        if(resposta != null)
+            return ResponseEntity.ok(resposta);
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/comanda/{id}")
+    public ResponseEntity<RespostaPedidoDTO> criarPedido(@PathVariable Long id, @RequestBody PedidoDTO pedido) {
         if(pedido != null){
-            Pedido novoPedido = pedidoService.criarPedido(pedido);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novoPedido);
+            Long idPedido = pedidoService.criarPedido(id, pedido);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new RespostaPedidoDTO(idPedido));
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

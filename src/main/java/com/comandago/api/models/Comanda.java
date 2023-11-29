@@ -47,4 +47,8 @@ public class Comanda {
 
     @ManyToMany
     private List<Pedido> pedidos;
+
+    public void addPedido(Pedido pedido){
+        this.pedidos.add(pedido);
+    }
 }
