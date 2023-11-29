@@ -1,5 +1,5 @@
 package com.comandago.api.dtos;
 
-public record LoginResponseDTO(String token) {
+public record LoginResponseDTO(Long id, String token) {
     
 }
