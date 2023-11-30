@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.comandago.api.dtos.ConsultarPedidosComandaDTO;
+import com.comandago.api.dtos.EstadoPedidoDTO;
 import com.comandago.api.dtos.ItemPedidoDTO;
 import com.comandago.api.dtos.PedidoDTO;
 import com.comandago.api.dtos.RespostaPedidoDTO;
@@ -87,5 +88,20 @@ public class PedidoController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/estado/{id}")
+    public ResponseEntity<RespostaPedidoDTO> alterarEstadoPedido(@PathVariable Long id, @RequestBody EstadoPedidoDTO estado){
+        Long resposta = pedidoService.alterarEstadoPedido(id, estado);
+        if(resposta != null)
+            return ResponseEntity.ok(new RespostaPedidoDTO(resposta));
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/estado")
+    public ResponseEntity<List<Pedido>> buscarPedidosPorEstado(@RequestBody EstadoPedidoDTO estadoPedido){
+        List<Pedido> pedidos = pedidoService.buscarPedidosPorEstado(estadoPedido);
+        return ResponseEntity.ok(pedidos);
     }
 }

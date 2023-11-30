@@ -1,6 +1,7 @@
 package com.comandago.api.services;
 
 import com.comandago.api.dtos.ConsultarPedidosComandaDTO;
+import com.comandago.api.dtos.EstadoPedidoDTO;
 import com.comandago.api.dtos.ItemPedidoDTO;
 import com.comandago.api.dtos.PedidoDTO;
 import com.comandago.api.models.Cardapio;
@@ -143,5 +144,22 @@ public class PedidoService {
         }
 
         return null;
+    }
+
+    public Long alterarEstadoPedido(Long id, EstadoPedidoDTO estado) {
+        Optional<Pedido> pedidoOptional = pedidoRepository.findById(id);
+        if(pedidoOptional.isPresent()){
+            Pedido pedido = pedidoOptional.get();
+            pedido.setEstado(estado.estadoPedido());
+            pedidoRepository.save(pedido);
+            return pedido.getId();
+        }
+
+        return null;
+    }
+
+    public List<Pedido> buscarPedidosPorEstado(EstadoPedidoDTO estadoPedido) {
+        List<Pedido> pedidos = pedidoRepository.findByEstado(estadoPedido.estadoPedido());
+        return pedidos;
     }
 }
