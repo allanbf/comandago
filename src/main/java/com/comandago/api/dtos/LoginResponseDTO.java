@@ -1,5 +1,7 @@
 package com.comandago.api.dtos;
 
-public record LoginResponseDTO(Long id, String token) {
+import com.comandago.api.enums.AtribuicaoUsuarioEnum;
+
+public record LoginResponseDTO(Long id, AtribuicaoUsuarioEnum atribuicao, String token) {
     
 }
