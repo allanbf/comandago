@@ -86,4 +86,10 @@ public class ComandaService {
 
         return null;
     }
+
+    public List<Comanda> buscarPorCheckout(boolean checkout){
+        List<Comanda> comandas = comandaRepository.findByCheckout(checkout);
+
+        return comandas;
+    }
 }

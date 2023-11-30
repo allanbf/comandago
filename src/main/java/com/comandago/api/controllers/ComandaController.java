@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.comandago.api.dtos.CheckoutDTO;
 import com.comandago.api.dtos.ComandaDTO;
 import com.comandago.api.dtos.IdComandaDTO;
 import com.comandago.api.models.Comanda;
@@ -77,6 +78,15 @@ public class ComandaController {
 
         if(retorno != null)
             return ResponseEntity.ok(new IdComandaDTO(retorno));
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<List<Comanda>> buscarPorCheckout(@RequestBody CheckoutDTO checkout){
+        List<Comanda> comandas = comandaService.buscarPorCheckout(checkout.checkout());
+        if(comandas != null)
+            return ResponseEntity.ok(comandas);
 
         return ResponseEntity.notFound().build();
     }

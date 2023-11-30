@@ -63,8 +63,8 @@ public class PedidoService {
             var pedido = new Pedido();
             pedido.setUsuario(usuarioOpitional.get());
             pedido.setMesa(mesaOptional.get());
-            comanda.addPedido(pedido);
             pedidoRepository.save(pedido);
+            comanda.addPedido(pedido);
             comandaRepository.save(comanda);
             return pedido.getId();
         }
