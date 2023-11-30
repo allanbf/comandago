@@ -48,6 +48,8 @@ public class Comanda {
     @ManyToMany
     private List<Pedido> pedidos;
 
+    private boolean checkout = false;
+
     public void addPedido(Pedido pedido){
         this.pedidos.add(pedido);
     }

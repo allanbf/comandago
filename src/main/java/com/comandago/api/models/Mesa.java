@@ -31,6 +31,8 @@ public class Mesa {
     @NotNull
     private boolean estaAtiva;
 
+    private Long idComanda;
+
     public boolean getEstaAtiva() {
         return estaAtiva;
     }

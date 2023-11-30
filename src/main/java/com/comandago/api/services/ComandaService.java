@@ -39,9 +39,11 @@ public class ComandaService {
         if(mesaOptional.isPresent() && mesa.getEstado().equals(EstadoMesaEnum.LIVRE)){
             var comanda = new Comanda();
             comanda.setNomeCliente(comandaDTO.getNomeCliente());
-            mesa.setEstado(EstadoMesaEnum.OCUPADA);
             comanda.setMesa(mesa);
             comandaRepository.save(comanda);
+            mesa.setEstado(EstadoMesaEnum.OCUPADA);
+            mesa.setIdComanda(comanda.getId());
+            mesaRepository.save(mesa);
             return comanda.getId();
         }
         return null;
@@ -65,5 +67,23 @@ public class ComandaService {
         } else {
             return false;
         }
+    }
+
+    public Long checkoutComanda(Long idComanda){
+        Optional<Comanda> comandaOptional = comandaRepository.findById(idComanda);
+        if(comandaOptional.isPresent()){
+            Comanda comanda = comandaOptional.get();
+            comanda.setCheckout(true);
+            comandaRepository.save(comanda);
+            Optional<Mesa> mesaOptional = mesaRepository.findById(comanda.getMesa().getId());
+            Mesa mesa = mesaOptional.get();
+            mesa.setIdComanda(null);
+            mesa.setEstado(EstadoMesaEnum.LIVRE);
+            mesaRepository.save(mesa);
+
+            return comanda.getId();
+        }
+
+        return null;
     }
 }

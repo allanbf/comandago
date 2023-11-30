@@ -1,24 +1,29 @@
 package com.comandago.api.controllers;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.comandago.api.dtos.ComandaDTO;
 import com.comandago.api.dtos.IdComandaDTO;
 import com.comandago.api.models.Comanda;
 import com.comandago.api.services.ComandaService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/comandas")
 public class ComandaController {
 
-    final ComandaService comandaService;
-
-    ComandaController(ComandaService comandaService) {
-        this.comandaService = comandaService;
-    }
+    @Autowired
+    private ComandaService comandaService;
 
 
     @GetMapping
@@ -64,5 +69,15 @@ public class ComandaController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("checkout/{id}")
+    public ResponseEntity<IdComandaDTO> checkoutComanda(@PathVariable Long id){
+        Long retorno = comandaService.checkoutComanda(id);
+
+        if(retorno != null)
+            return ResponseEntity.ok(new IdComandaDTO(retorno));
+
+        return ResponseEntity.notFound().build();
     }
 }
