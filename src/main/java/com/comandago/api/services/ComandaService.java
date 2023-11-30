@@ -32,7 +32,7 @@ public class ComandaService {
         return comanda.orElse(null);
     }
 
-    public boolean criarComanda(ComandaDTO comandaDTO) {
+    public Long criarComanda(ComandaDTO comandaDTO) {
         Optional<Mesa> mesaOptional = mesaRepository.findById(comandaDTO.getIdMesa());
         Mesa mesa = mesaOptional.get();
         System.out.println(mesa.toString());
@@ -42,9 +42,9 @@ public class ComandaService {
             mesa.setEstado(EstadoMesaEnum.OCUPADA);
             comanda.setMesa(mesa);
             comandaRepository.save(comanda);
-            return true;
+            return comanda.getId();
         }
-        return false;
+        return null;
     }
 
     public Comanda atualizarComanda(Long id, Comanda comandaAtualizada) {

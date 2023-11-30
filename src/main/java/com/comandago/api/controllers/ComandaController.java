@@ -1,6 +1,7 @@
 package com.comandago.api.controllers;
 
 import com.comandago.api.dtos.ComandaDTO;
+import com.comandago.api.dtos.IdComandaDTO;
 import com.comandago.api.models.Comanda;
 import com.comandago.api.services.ComandaService;
 import org.springframework.http.HttpStatus;
@@ -37,12 +38,12 @@ public class ComandaController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> criarComanda(@RequestBody ComandaDTO comanda) {
-        boolean criado = comandaService.criarComanda(comanda);
-        if(criado){
-            return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<IdComandaDTO> criarComanda(@RequestBody ComandaDTO comanda) {
+        Long idComanda = comandaService.criarComanda(comanda);
+        if(idComanda > 0){
+            return ResponseEntity.ok(new IdComandaDTO(idComanda));
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
