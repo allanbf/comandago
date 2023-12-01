@@ -40,10 +40,12 @@ public class Pedido {
     @Column(nullable = false)
     private LocalDateTime dataHora = LocalDateTime.now(ZoneOffset.of("-03:00"));
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "usuarioId")
-    private Usuario usuario;
+    // @NotNull
+    // @ManyToOne
+    // @JoinColumn(name = "usuarioId")
+    // private Usuario usuario;
+
+    private String usuario;
 
     @NotNull
     @ManyToOne

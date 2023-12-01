@@ -50,7 +50,7 @@ public class PedidoController {
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/pedido/{id}")
+    @PostMapping("/pedido/{id}")
     public ResponseEntity<Void> adicionarItensPedido(@PathVariable Long id, @RequestBody List<ItemPedidoDTO> itens){
         boolean resposta = pedidoService.adicionarItens(id, itens);
         if(resposta)
@@ -93,8 +93,10 @@ public class PedidoController {
     @PostMapping("/estado/{id}")
     public ResponseEntity<RespostaPedidoDTO> alterarEstadoPedido(@PathVariable Long id, @RequestBody EstadoPedidoDTO estado){
         Long resposta = pedidoService.alterarEstadoPedido(id, estado);
-        if(resposta != null)
+        if(resposta > 0)
             return ResponseEntity.ok(new RespostaPedidoDTO(resposta));
+        if(resposta == 0)
+            return ResponseEntity.noContent().build();
 
         return ResponseEntity.notFound().build();
     }

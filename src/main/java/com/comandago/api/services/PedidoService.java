@@ -4,6 +4,7 @@ import com.comandago.api.dtos.ConsultarPedidosComandaDTO;
 import com.comandago.api.dtos.EstadoPedidoDTO;
 import com.comandago.api.dtos.ItemPedidoDTO;
 import com.comandago.api.dtos.PedidoDTO;
+import com.comandago.api.enums.EstadoPedidoEnum;
 import com.comandago.api.models.Cardapio;
 import com.comandago.api.models.Comanda;
 import com.comandago.api.models.Mesa;
@@ -62,7 +63,7 @@ public class PedidoService {
         if(comandaOptional.isPresent() && usuarioOpitional.isPresent() && mesaOptional.isPresent()){
             Comanda comanda = comandaOptional.get();
             var pedido = new Pedido();
-            pedido.setUsuario(usuarioOpitional.get());
+            pedido.setUsuario(usuarioOpitional.get().getNome());
             pedido.setMesa(mesaOptional.get());
             pedidoRepository.save(pedido);
             comanda.addPedido(pedido);
@@ -150,9 +151,30 @@ public class PedidoService {
         Optional<Pedido> pedidoOptional = pedidoRepository.findById(id);
         if(pedidoOptional.isPresent()){
             Pedido pedido = pedidoOptional.get();
-            pedido.setEstado(estado.estadoPedido());
-            pedidoRepository.save(pedido);
-            return pedido.getId();
+            if(!pedido.getEstado().equals(estado.estadoPedido())){
+                if(estado.estadoPedido().equals(EstadoPedidoEnum.CANCELADO) && pedido.getItens() != null){
+                    Double valor = pedido.getValor();
+
+                    for(PedidosCardapio p : pedido.getItens()){
+                        valor -= p.getQuantidade()*p.getCardapio().getValor();
+                    }
+                    
+                    pedido.setValor(valor);
+                } 
+                else if (pedido.getEstado().equals(EstadoPedidoEnum.CANCELADO) && pedido.getItens() != null){
+                    Double valor = pedido.getValor();
+
+                    for(PedidosCardapio p : pedido.getItens()){
+                        valor += p.getQuantidade()*p.getCardapio().getValor();
+                    }
+
+                    pedido.setValor(valor);
+                }
+                pedido.setEstado(estado.estadoPedido());
+                pedidoRepository.save(pedido);
+                return pedido.getId();
+            }
+            return (long) 0;
         }
 
         return null;

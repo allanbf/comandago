@@ -28,7 +28,7 @@ public class ConsultarPedidosComandaDTO {
     
     public void setPedido(Pedido pedido){
         this.idPedido = pedido.getId();
-        this.usuario = pedido.getUsuario().getNome();
+        this.usuario = pedido.getUsuario();
         this.mesa = pedido.getMesa().getId();
         this.estado = pedido.getEstado();
         this.itens = pedido.getItens();
