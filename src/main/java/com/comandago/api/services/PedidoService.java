@@ -225,8 +225,9 @@ public class PedidoService {
             PedidosCardapio item = pedidosCardapioOptional.get();
             Optional<Pedido> pedidoOptional = pedidoRepository.findById(item.getPedido().getId());
             if(pedidoOptional.isPresent()){
-                
-
+                Pedido pedido = pedidoOptional.get();
+                pedido.setValor(pedido.getValor()-(item.getQuantidade()*item.getCardapio().getValor()));
+                pedidoRepository.save(pedido);
                 pedidosCardapioRepository.delete(item);
                 return true;
             }
