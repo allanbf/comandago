@@ -26,11 +26,10 @@ public class CardapioController {
     @GetMapping("/{id}")
     public ResponseEntity<Cardapio> obterCardapioPorId(@PathVariable Long id) {
         Cardapio cardapio = cardapioService.obterCardapioPorId(id);
-        if (cardapio != null) {
+        if (cardapio != null)
             return ResponseEntity.ok(cardapio);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
@@ -43,15 +42,12 @@ public class CardapioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cardapio> atualizarCardapio(@PathVariable Long id, @RequestBody Cardapio cardapio) {
-        // if(cardapio == null)
-        //     return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> atualizarCardapio(@PathVariable Long id, @RequestBody Cardapio cardapio) {
         Cardapio cardapioAtualizado = cardapioService.atualizarCardapio(id, cardapio);
-        if (cardapioAtualizado != null) {
-            return ResponseEntity.ok(cardapioAtualizado);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        if (cardapioAtualizado != null)
+            return ResponseEntity.ok().build();
+        
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")

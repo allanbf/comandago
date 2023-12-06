@@ -31,33 +31,15 @@ public class CardapioService {
     }
 
     public Cardapio atualizarCardapio(Long id, Cardapio cardapioAtualizado) {
-        boolean atualizado = false;
         Optional<Cardapio> cardapioOptional = cardapioRepository.findById(id);
         if (cardapioOptional.isPresent()) {
             Cardapio cardapioExistente = cardapioOptional.get();
-
-            if(cardapioExistente.getNome().equals(cardapioAtualizado.getNome())){
-                cardapioExistente.setNome(cardapioAtualizado.getNome());
-                atualizado = true;
-            }
-
-            if(cardapioExistente.getCategoria().equals(cardapioAtualizado.getCategoria())){
-                cardapioExistente.setCategoria(cardapioAtualizado.getCategoria());
-                atualizado = true;
-            }
-
-            if(cardapioExistente.getValor() != cardapioAtualizado.getValor()){
-                cardapioExistente.setValor(cardapioAtualizado.getValor());
-                atualizado = true;
-            }
+            cardapioExistente.setNome(cardapioAtualizado.getNome());
+            cardapioExistente.setCategoria(cardapioAtualizado.getCategoria());
+            cardapioExistente.setValor(cardapioAtualizado.getValor());
+            cardapioExistente.setEstaAtivo(cardapioAtualizado.getEstaAtivo());
             
-            if(cardapioExistente.getEstaAtivo() != cardapioAtualizado.getEstaAtivo()){
-                cardapioExistente.setEstaAtivo(cardapioAtualizado.getEstaAtivo());
-                atualizado = true;
-            }
-
-            if(atualizado)
-                return cardapioRepository.save(cardapioExistente);
+            return cardapioRepository.save(cardapioExistente);
         } 
 
         return null;
