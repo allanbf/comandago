@@ -191,4 +191,46 @@ public class PedidoService {
         List<Pedido> pedidos = pedidoRepository.findByEstado(estadoPedido.estadoPedido());
         return pedidos;
     }
+
+    public boolean alterarItem(Long idItem, PedidosCardapio itemAlterado) {
+        Optional<PedidosCardapio> pedidoCardapioOptional = pedidosCardapioRepository.findById(idItem);
+        if(pedidoCardapioOptional.isPresent()){
+            Optional<Cardapio> cardapioOptional = cardapioRepository.findById(itemAlterado.getCardapio().getId());
+            if(cardapioOptional.isPresent()){
+                PedidosCardapio item = pedidoCardapioOptional.get();
+                item.setCardapio(itemAlterado.getCardapio());
+                item.setQuantidade(itemAlterado.getQuantidade());
+                item.setObservacoes(itemAlterado.getObservacoes());
+
+                pedidosCardapioRepository.save(item);
+                
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public PedidosCardapio buscarItemPedido(Long id) {
+        Optional<PedidosCardapio> pedidosCardapioOptional = pedidosCardapioRepository.findById(id);
+        if(pedidosCardapioOptional.isPresent())
+            return pedidosCardapioOptional.get();
+
+        return null;
+    }
+
+    public boolean deletarItemPedido(Long idItemPedido) {
+        Optional<PedidosCardapio> pedidosCardapioOptional = pedidosCardapioRepository.findById(idItemPedido);
+        if(pedidosCardapioOptional.isPresent()){
+            PedidosCardapio item = pedidosCardapioOptional.get();
+            Optional<Pedido> pedidoOptional = pedidoRepository.findById(item.getPedido().getId());
+            if(pedidoOptional.isPresent()){
+                
+
+                pedidosCardapioRepository.delete(item);
+                return true;
+            }
+        }
+        return false;
+    }
 }

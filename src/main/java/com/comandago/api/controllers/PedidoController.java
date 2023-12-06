@@ -22,6 +22,7 @@ import com.comandago.api.dtos.ItemPedidoDTO;
 import com.comandago.api.dtos.PedidoDTO;
 import com.comandago.api.dtos.RespostaPedidoDTO;
 import com.comandago.api.models.Pedido;
+import com.comandago.api.models.PedidosCardapio;
 import com.comandago.api.services.PedidoService;
 
 @RestController
@@ -69,9 +70,12 @@ public class PedidoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Pedido> atualizarPedido(@PathVariable Long id, @Valid @RequestBody Pedido pedidoAtualizado) {
+    public ResponseEntity<RespostaPedidoDTO> atualizarPedido(@PathVariable Long id, @Valid @RequestBody Pedido pedidoAtualizado) {
         Pedido pedido = pedidoService.atualizarPedido(id, pedidoAtualizado);
-        return ResponseEntity.ok(pedido);
+        if(pedido != null)
+            return ResponseEntity.ok(new RespostaPedidoDTO(pedido.getId()));
+
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
@@ -105,5 +109,33 @@ public class PedidoController {
     public ResponseEntity<List<Pedido>> buscarPedidosPorEstado(@RequestBody EstadoPedidoDTO estadoPedido){
         List<Pedido> pedidos = pedidoService.buscarPedidosPorEstado(estadoPedido);
         return ResponseEntity.ok(pedidos);
+    }
+
+    @GetMapping("/colsultar/item/{id}")
+    public ResponseEntity<PedidosCardapio> colsultarItemPedido(@PathVariable Long id){
+        PedidosCardapio item  = pedidoService.buscarItemPedido(id);
+        if(item != null)
+            return ResponseEntity.ok(item);
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/editar/item/{id}")
+    public ResponseEntity<Void> editar(@PathVariable Long id, @RequestBody PedidosCardapio itemAlterado) {
+        boolean alterado = pedidoService.alterarItem(id, itemAlterado);
+        if(alterado)
+            return ResponseEntity.ok().build();
+        
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/deletar/item/{id}")
+    public ResponseEntity<Void> deletarItemPedido(@PathVariable Long id){
+        boolean resposta = pedidoService.deletarItemPedido(id);
+
+        if(resposta)
+            return ResponseEntity.ok().build();
+
+        return ResponseEntity.notFound().build();
     }
 }
