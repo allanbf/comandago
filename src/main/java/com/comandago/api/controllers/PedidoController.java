@@ -80,8 +80,11 @@ public class PedidoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluirPedido(@PathVariable Long id) {
-        pedidoService.excluirPedido(id);
-        return ResponseEntity.noContent().build();
+        boolean resposta = pedidoService.excluirPedido(id);
+        if(resposta)
+            return ResponseEntity.ok().build();
+        
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/itens/add/{id}")
