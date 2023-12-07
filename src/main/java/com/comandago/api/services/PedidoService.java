@@ -93,11 +93,11 @@ public class PedidoService {
     public boolean excluirPedido(Long id) {
         Optional<Pedido> pedidOptional = pedidoRepository.findById(id);
         if(pedidOptional.isPresent()){
-            Pedido pedido = pedidOptional.get();
-            Optional<Comanda> comandOptional = comandaRepository.findById(pedido.getIdComanda());
-            Comanda comanda = comandOptional.get();
-            comanda.setTotalAPagar(comanda.getTotalAPagar()-pedido.getValor());
-            comandaRepository.save(comanda);
+            // Pedido pedido = pedidOptional.get();
+            // Optional<Comanda> comandOptional = comandaRepository.findById(pedido.getIdComanda());
+            // Comanda comanda = comandOptional.get();
+            // comanda.setTotalAPagar(comanda.getTotalAPagar()-pedido.getValor());
+            // comandaRepository.save(comanda);
             pedidoRepository.deleteById(id);
             return true;
         }
