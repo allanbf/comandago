@@ -53,4 +53,9 @@ public class Comanda {
     public void addPedido(Pedido pedido){
         this.pedidos.add(pedido);
     }
+
+    public void removerPedido(Pedido pedido){
+        if(pedidos != null)
+            pedidos.remove(pedido);
+    }
 }

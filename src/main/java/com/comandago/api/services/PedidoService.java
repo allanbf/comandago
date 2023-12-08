@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 @Service
 public class PedidoService {
 
@@ -46,6 +49,8 @@ public class PedidoService {
     @Autowired
     private PedidosCardapioRepository pedidosCardapioRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
@@ -90,15 +95,47 @@ public class PedidoService {
         }
     }
 
+    // public boolean excluirPedido(Long id) {
+    //     Optional<Pedido> pedidOptional = pedidoRepository.findById(id);
+    //     if(pedidOptional.isPresent()){
+    //         
+
+    //         Pedido pedido = pedidOptional.get();
+            
+    //         // pedido.limparItens();
+    //         // System.out.println("Limpou lista de itens do pedido.");
+    //         // pedidoRepository.save(pedido);
+    //         // System.out.println("Salvou o pedido sem itens");
+            
+    //         // System.out.println(pedidOptional.get().toString());
+    //         // for(PedidosCardapio item : pedido.getItens()){
+    //         //     System.out.println("\nDentro do for\n");
+    //         //     pedidosCardapioRepository.deleteById(item.getId());
+    //         // }
+            
+    //         pedidoRepository.delete(pedido);
+    //         entityManager.flush();
+
+    //         System.out.println("deletou o pedido");
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
     public boolean excluirPedido(Long id) {
-        Optional<Pedido> pedidOptional = pedidoRepository.findById(id);
-        if(pedidOptional.isPresent()){
+        Optional<Pedido> pedidoOptional = pedidoRepository.findById(id);
+        if(pedidoOptional.isPresent()){
             // Pedido pedido = pedidOptional.get();
             // Optional<Comanda> comandOptional = comandaRepository.findById(pedido.getIdComanda());
             // Comanda comanda = comandOptional.get();
             // comanda.setTotalAPagar(comanda.getTotalAPagar()-pedido.getValor());
             // comandaRepository.save(comanda);
-            pedidoRepository.deleteById(id);
+            System.out.println("\nEntrou if\n");
+            Pedido pedido = pedidoOptional.get();
+            Optional<Comanda> comandOptional = comandaRepository.findById(pedido.getIdComanda());
+            Comanda comanda = comandOptional.get();
+            comanda.removerPedido(pedido);
+            comandaRepository.save(comanda);
             return true;
         }
         return false;
@@ -106,9 +143,10 @@ public class PedidoService {
 
     public boolean adicionarItens(Long idPedido, List<ItemPedidoDTO> itens){
         Optional<Pedido> pedidoOptional = pedidoRepository.findById(idPedido);
-        Pedido pedido = pedidoOptional.get();
-        List<PedidosCardapio> itensPedido = new ArrayList<>();
-        if(pedido != null){
+        if(pedidoOptional.isPresent()){
+            System.out.println("\nEntrou no if.\n");
+            Pedido pedido = pedidoOptional.get();
+            List<PedidosCardapio> itensPedido = new ArrayList<>();
             Double valorPedido = 0.0;
             for(ItemPedidoDTO item : itens){
                 Optional<Cardapio> cardapio = cardapioRepository.findById(item.cardapioId());
@@ -121,6 +159,7 @@ public class PedidoService {
                     pedidosCardapioRepository.save(itemPedido);
                     itensPedido.add(itemPedido);
                     valorPedido += itemPedido.getQuantidade()*itemPedido.getCardapio().getValor();
+                    System.out.println("\nitem adicionado.\n");
                 }
             }
             pedido.addItens(itensPedido);
@@ -129,12 +168,13 @@ public class PedidoService {
             Comanda comanda = comandaOptional.get();
             comanda.setTotalAPagar(comanda.getTotalAPagar()+valorPedido);
             comandaRepository.save(comanda);
+            System.out.println("\nSalvou comanda.\n");
             return true;
         }
 
         return false;
     }
-
+    
     public void adicionarItem(Pedido pedido, ItemPedidoDTO item){
         Optional<Cardapio> cardapioOptional = cardapioRepository.findById(item.cardapioId());
         if(cardapioOptional.isPresent()){

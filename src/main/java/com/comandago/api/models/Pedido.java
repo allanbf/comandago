@@ -5,6 +5,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
@@ -15,7 +16,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.comandago.api.enums.EstadoPedidoEnum;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -47,7 +50,6 @@ public class Pedido {
 
     private String usuario;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "mesaId")
     private Mesa mesa;
@@ -81,12 +83,22 @@ public class Pedido {
         }
     }
 
-    public void addItem(PedidosCardapio item){{
+    public void addItem(PedidosCardapio item){
         if(this.itens == null)
-            this.itens = new ArrayList<>();
+            this.itens = new ArrayList<PedidosCardapio>();
         this.valor += (item.getQuantidade() * item.getCardapio().getValor());
         itens.add(item);
     }
 
+    public void removerIten(PedidosCardapio item){
+        this.itens.remove(item);
     }
+
+    public void limparItens(){
+        if (this.itens != null) {
+            this.itens.clear();
+        }
+    }
+
 }
+
