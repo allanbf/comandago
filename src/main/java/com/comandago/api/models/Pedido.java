@@ -60,6 +60,7 @@ public class Pedido {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "pedido")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<PedidosCardapio> itens;
 
     private Double valor = 0.0;

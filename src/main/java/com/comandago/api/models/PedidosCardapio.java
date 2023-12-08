@@ -36,11 +36,13 @@ public class PedidosCardapio {
     @ManyToOne
     @JoinColumn(name = "pedidoId")
     @JsonBackReference
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Pedido pedido;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "cardapioId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Cardapio cardapio;
 
     @NotNull

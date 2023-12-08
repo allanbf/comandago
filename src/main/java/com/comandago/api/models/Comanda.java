@@ -15,6 +15,9 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +49,7 @@ public class Comanda {
     private Double totalAPagar = 0.0;
 
     @ManyToMany
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Pedido> pedidos;
 
     private boolean checkout = false;

@@ -132,10 +132,16 @@ public class PedidoService {
             // comandaRepository.save(comanda);
             System.out.println("\nEntrou if\n");
             Pedido pedido = pedidoOptional.get();
-            Optional<Comanda> comandOptional = comandaRepository.findById(pedido.getIdComanda());
-            Comanda comanda = comandOptional.get();
-            comanda.removerPedido(pedido);
-            comandaRepository.save(comanda);
+            // Optional<Comanda> comandOptional = comandaRepository.findById(pedido.getIdComanda());
+            // Comanda comanda = comandOptional.get();
+            // comanda.removerPedido(pedido);
+            // comandaRepository.save(comanda);
+            if(!pedido.getItens().isEmpty()) {
+                for(PedidosCardapio item : pedido.getItens()){
+                    pedidosCardapioRepository.delete(item);
+                }
+            }
+            pedidoRepository.delete(pedido);
             return true;
         }
         return false;
